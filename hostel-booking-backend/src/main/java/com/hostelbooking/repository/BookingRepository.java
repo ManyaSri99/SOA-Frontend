@@ -1,0 +1,17 @@
+package com.hostelbooking.repository;
+
+import com.hostelbooking.model.Booking;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface BookingRepository extends JpaRepository<Booking, Long> {
+    Optional<Booking> findByBookingId(String bookingId);
+    List<Booking> findByCustomerId(Long customerId);
+    List<Booking> findByRoomId(Long roomId);
+    List<Booking> findByBookingStatus(String bookingStatus);
+    List<Booking> findByPaymentStatus(String paymentStatus);
+}
