@@ -19,6 +19,10 @@ public class ManagerService {
     }
 
     public Manager registerManager(String username, String password, String fullName) {
+        return registerManager(username, password, fullName, "HOSTEL_MANAGER");
+    }
+
+    public Manager registerManager(String username, String password, String fullName, String role) {
         if (username == null || username.isBlank()) {
             throw new ApiException("Username is required");
         }
@@ -26,20 +30,27 @@ public class ManagerService {
             throw new ApiException("Password must be at least 6 characters");
         }
 
-        managerRepository.findByUsername(username.trim())
+        String normalizedUsername = username.trim().toLowerCase();
+        managerRepository.findByUsername(normalizedUsername)
             .ifPresent(existing -> { throw new ApiException("Manager already exists"); });
 
+        String normalizedRole = (role == null || role.isBlank()) ? "HOSTEL_MANAGER" : role.trim().toUpperCase();
+        if (!"HOSTEL_MANAGER".equals(normalizedRole) && !"CUSTOMER".equals(normalizedRole) && !"ADMIN".equals(normalizedRole)) {
+            normalizedRole = "HOSTEL_MANAGER";
+        }
+
         Manager manager = new Manager();
-        manager.setUsername(username.trim());
+        manager.setUsername(normalizedUsername);
         manager.setPassword(passwordEncoder.encode(password));
-        manager.setFullName(fullName == null ? username.trim() : fullName.trim());
-        manager.setRole("HOSTEL_MANAGER");
+        manager.setFullName(fullName == null || fullName.isBlank() ? normalizedUsername : fullName.trim());
+        manager.setRole(normalizedRole);
 
         return managerRepository.save(manager);
     }
 
     public Manager login(AuthRequest request) {
-        Manager manager = managerRepository.findByUsername(request.getUsername().trim())
+        String normalizedUsername = request.getUsername().trim().toLowerCase();
+        Manager manager = managerRepository.findByUsername(normalizedUsername)
             .orElseThrow(() -> new ApiException("Invalid username or password"));
 
         if (!passwordEncoder.matches(request.getPassword(), manager.getPassword())) {
@@ -47,5 +58,14 @@ public class ManagerService {
         }
 
         return manager;
+    }
+
+    public Manager findByUsername(String username) {
+        if (username == null || username.isBlank()) {
+            throw new ApiException("Username is required");
+        }
+
+        return managerRepository.findByUsername(username.trim().toLowerCase())
+            .orElseThrow(() -> new ApiException("User not found"));
     }
 }

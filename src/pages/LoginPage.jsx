@@ -52,6 +52,10 @@ const LoginPage = () => {
         role: response.role || 'CUSTOMER',
       };
 
+      if (!token) {
+        throw new Error('Authentication token missing in login response.');
+      }
+
       login(user, token);
       navigate(user.role === 'HOTEL_MANAGER' ? '/manager/dashboard' : user.role === 'ADMIN' ? '/admin/dashboard' : '/');
     } catch (err) {

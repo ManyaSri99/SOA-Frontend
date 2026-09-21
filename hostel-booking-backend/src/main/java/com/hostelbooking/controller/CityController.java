@@ -1,5 +1,6 @@
 package com.hostelbooking.controller;
 
+import com.hostelbooking.dto.CityRequest;
 import com.hostelbooking.model.City;
 import com.hostelbooking.service.CityService;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class CityController {
     }
 
     @PostMapping("/cities")
-    public ResponseEntity<City> createCity(@RequestParam String name) {
-        return ResponseEntity.ok(cityService.createCity(name));
+    public ResponseEntity<City> createCity(@RequestBody CityRequest request) {
+        return ResponseEntity.ok(cityService.createCity(request.getName()));
     }
 }

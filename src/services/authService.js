@@ -58,6 +58,22 @@ const buildUserResponse = (user) => ({
   },
 });
 
+const normalizeBackendLoginResponse = (response) => {
+  const payload = response?.data ?? response ?? {};
+  const token = payload.token || payload.accessToken || payload.jwt || null;
+  const user = payload.user || {
+    username: payload.username || payload.name || 'user',
+    name: payload.name || payload.username || 'User',
+    email: payload.email || `${(payload.username || 'user').toLowerCase()}@example.com`,
+    role: normalizeRole(payload.role || 'CUSTOMER'),
+  };
+
+  return {
+    token,
+    user,
+  };
+};
+
 const login = async (credentials) => {
   const username = (credentials?.username || '').trim().toLowerCase();
   const password = credentials?.password || '';
@@ -74,7 +90,7 @@ const login = async (credentials) => {
 
   try {
     const response = await api.post('/api/auth/login', credentials);
-    return response.data;
+    return normalizeBackendLoginResponse(response);
   } catch (error) {
     throw error;
   }

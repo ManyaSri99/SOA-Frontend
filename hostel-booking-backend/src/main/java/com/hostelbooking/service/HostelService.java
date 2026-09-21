@@ -84,6 +84,9 @@ public class HostelService {
 
         hostel.setCity(city);
         hostel.setArea(area);
+        hostel.setAddress(hostel.getAddress() == null ? "" : hostel.getAddress().trim());
+        hostel.setContactNumber(hostel.getContactNumber() == null ? "" : hostel.getContactNumber().trim());
+        hostel.setFacilities(hostel.getFacilities() == null ? "" : hostel.getFacilities().trim());
         hostel.setStatus(hostel.getStatus() == null || hostel.getStatus().isBlank() ? "ACTIVE" : hostel.getStatus());
         return hostelRepository.save(hostel);
     }
